@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+use App\Models\Category;
 use App\Models\UserQuestionStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,8 +25,8 @@ class DashboardController extends Controller
             ? round(($knownQuestions / $totalQuestions) * 100)
             : 0;
 
-        // Po kategorijama
-        $categories = ['PHP', 'OOP PHP', 'Laravel'];
+        // Dinamičko čitanje svih kategorija iz baze
+        $categories = Category::pluck('name')->toArray();
         $categoryProgress = [];
 
         foreach ($categories as $categoryName) {
