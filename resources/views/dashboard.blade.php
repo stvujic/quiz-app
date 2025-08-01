@@ -26,4 +26,17 @@
             </div>
         @endforeach
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <a href="{{ route('questions.status', 'all') }}" class="block p-6 bg-white rounded-lg shadow hover:bg-gray-100">
+            <h3 class="text-xl font-semibold text-center">All Questions</h3>
+        </a>
+        <a href="{{ route('questions.status', 'know') }}" class="block p-6 bg-white rounded-lg shadow hover:bg-green-100">
+            <h3 class="text-xl font-semibold text-center">I Know</h3>
+        </a>
+        <a href="{{ route('questions.status', 'dont_know') }}" class="block p-6 bg-white rounded-lg shadow hover:bg-red-100">
+            <h3 class="text-xl font-semibold text-center">I Don’t Know</h3>
+        </a>
+    </div>
+
 </x-app-layout>
