@@ -13,7 +13,8 @@ class Question extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    public function userStatuses()
+
+    public function userQuestionStatuses()
     {
         return $this->hasMany(UserQuestionStatus::class);
     }

@@ -32,8 +32,8 @@
             </div>
 
             {{-- Submit --}}
-            <div>
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+            <div style="margin-top: 20px;">
+                <button type="submit" style="padding:10px 20px; background-color:#007BFF; color:#fff; border:none; border-radius:5px;">
                     Save Question
                 </button>
             </div>

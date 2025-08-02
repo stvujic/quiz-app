@@ -30,14 +30,16 @@ class DashboardController extends Controller
         $categoryProgress = [];
 
         foreach ($categories as $categoryName) {
-            $categoryQuestions = Question::whereHas('category', function ($q) use ($categoryName) {
+            $categoryQuestions = Question::with('userQuestionStatuses') // Dodato eager-loading
+            ->whereHas('category', function ($q) use ($categoryName) {
                 $q->where('name', $categoryName);
             })->get();
 
             $total = $categoryQuestions->count();
 
             $known = $categoryQuestions->filter(function ($question) use ($userId) {
-                return $question->userStatuses->where('user_id', $userId)
+                return $question->userQuestionStatuses
+                    ->where('user_id', $userId)
                     ->where('status', 'next')
                     ->isNotEmpty();
             })->count();
