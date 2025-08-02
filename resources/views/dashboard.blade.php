@@ -39,4 +39,17 @@
         </a>
     </div>
 
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="#" style="display:inline-block; background-color:#007BFF; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px; margin-bottom: 15px;">
+            Start Test
+        </a>
+
+        @if (Auth::user() && Auth::user()->is_admin)
+            <br>
+            <a href="{{ route('questions.create') }}" style="display:inline-block; background-color:#333; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px;">
+                Add New Question
+            </a>
+        @endif
+    </div>
+
 </x-app-layout>
