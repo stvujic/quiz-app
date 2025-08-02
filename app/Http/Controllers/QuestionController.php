@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Question;
 use App\Models\UserQuestionStatus;
 use Illuminate\Http\Request;
@@ -32,6 +33,20 @@ class QuestionController extends Controller
 
     public function create()
     {
-        return view('questions.create');
+        $categories = Category::all();
+        return view('questions.create', compact('categories'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'text' => 'required|string|max:255',
+            'answer' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        Question::create($validated);
+
+        return redirect()->route('questions.status', 'all')->with('success', 'Question added successfully.');
     }
 }
