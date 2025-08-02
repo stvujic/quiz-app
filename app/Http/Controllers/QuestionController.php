@@ -29,4 +29,9 @@ class QuestionController extends Controller
 
         return view('questions.index', compact('questions', 'status'));
     }
+
+    public function create()
+    {
+        return view('questions.create');
+    }
 }
