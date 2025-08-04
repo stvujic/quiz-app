@@ -17,7 +17,7 @@ class DashboardController extends Controller
         // Ukupno pitanja
         $totalQuestions = Question::count();
         $knownQuestions = UserQuestionStatus::where('user_id', $userId)
-            ->where('status', 'next')
+            ->where('status', 'know') // ✅ ispravljeno
             ->count();
 
         // Procenat ukupno
@@ -30,17 +30,17 @@ class DashboardController extends Controller
         $categoryProgress = [];
 
         foreach ($categories as $categoryName) {
-            $categoryQuestions = Question::with('userQuestionStatuses') // Dodato eager-loading
-            ->whereHas('category', function ($q) use ($categoryName) {
-                $q->where('name', $categoryName);
-            })->get();
+            $categoryQuestions = Question::with('userQuestionStatuses')
+                ->whereHas('category', function ($q) use ($categoryName) {
+                    $q->where('name', $categoryName);
+                })->get();
 
             $total = $categoryQuestions->count();
 
             $known = $categoryQuestions->filter(function ($question) use ($userId) {
                 return $question->userQuestionStatuses
                     ->where('user_id', $userId)
-                    ->where('status', 'next')
+                    ->where('status', 'know') // ✅ ispravljeno
                     ->isNotEmpty();
             })->count();
 

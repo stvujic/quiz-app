@@ -40,8 +40,9 @@
     </div>
 
     <div style="text-align: center; margin-top: 30px;">
-        <a href="#" style="display:inline-block; background-color:#007BFF; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px; margin-bottom: 15px;">
-            Start Test
+        <a href="{{ route('test.categories') }}" style="display:inline-block; background-color:#007BFF; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px; margin-bottom: 15px;">
+
+        Start Test
         </a>
 
         @if (Auth::user() && Auth::user()->is_admin)

@@ -7,8 +7,6 @@ use App\Models\Question;
 use App\Models\UserQuestionStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-
 
 class QuestionController extends Controller
 {
@@ -21,10 +19,10 @@ class QuestionController extends Controller
         }
 
         if ($status === 'all') {
-            $questions = Question::with('category', 'userQuestionStatuses')->get();
+            $questions = Question::with('category')->get();
         } else {
             $userStatuses = UserQuestionStatus::where('user_id', $userId)
-                ->where('status', $status === 'know' ? 'next' : 'hint')
+                ->where('status', $status)
                 ->pluck('question_id');
 
             $questions = Question::whereIn('id', $userStatuses)->with('category')->get();
@@ -87,19 +85,83 @@ class QuestionController extends Controller
             ->first();
 
         if (!$status) {
-            // Ako ne postoji, dodaj kao 'next' (I Know)
             UserQuestionStatus::create([
                 'user_id' => $userId,
                 'question_id' => $question->id,
-                'status' => 'next',
+                'status' => 'know',
             ]);
         } else {
-            // Inače obrni status
-            $status->status = $status->status === 'next' ? 'hint' : 'next';
+            $status->status = $status->status === 'know' ? 'dont_know' : 'know';
             $status->save();
         }
 
         return back()->with('success', 'Question status updated.');
     }
 
+    // ---------- TEST MODE ----------
+
+    public function showTestCategories()
+    {
+        $categories = Category::all();
+        return view('test.select_category', compact('categories'));
+    }
+
+    public function startTest(Request $request)
+    {
+        $userId = Auth::id();
+        $categoryId = $request->input('category_id');
+
+        $query = Question::with('category')
+            ->whereDoesntHave('userQuestionStatuses', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+
+        if ($categoryId !== 'all') {
+            $query->where('category_id', $categoryId);
+        }
+
+        $question = $query->first();
+
+        if (!$question) {
+            return redirect()->route('dashboard')->with('info', 'No more questions in this category.');
+        }
+
+        return view('test.question', compact('question', 'categoryId'));
+    }
+
+    public function submitTestAnswer(Request $request)
+    {
+        $userId = Auth::id();
+        $questionId = $request->input('question_id');
+        $categoryId = $request->input('category_id');
+        $action = $request->input('action'); // "know", "dont_know" ili "next"
+
+        if (in_array($action, ['know', 'dont_know'])) {
+            UserQuestionStatus::updateOrCreate(
+                ['user_id' => $userId, 'question_id' => $questionId],
+                ['status' => $action]
+            );
+        }
+
+        // Vrati sledeće pitanje
+        $query = Question::with('category')
+            ->whereDoesntHave('userQuestionStatuses', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+
+        if ($categoryId !== 'all') {
+            $query->where('category_id', $categoryId);
+        }
+
+        $nextQuestion = $query->first();
+
+        if (!$nextQuestion) {
+            return redirect()->route('dashboard')->with('info', 'Test completed for this category.');
+        }
+
+        return view('test.question', [
+            'question' => $nextQuestion,
+            'categoryId' => $categoryId,
+        ]);
+    }
 }

@@ -32,8 +32,8 @@
                                 $userStatus = $question->userQuestionStatuses
                                     ->where('user_id', Auth::id())
                                     ->first()?->status;
-                                $statusText = $userStatus === 'next' ? 'I Know' : ($userStatus === 'hint' ? 'I Don’t Know' : 'Set Status');
-                                $statusColor = $userStatus === 'next' ? '#28a745' : ($userStatus === 'hint' ? '#dc3545' : '#6c757d');
+                                $statusText = $userStatus === 'know' ? 'I Know' : ($userStatus === 'dont_know' ? 'I Don’t Know' : 'Set Status');
+                                $statusColor = $userStatus === 'know' ? '#28a745' : ($userStatus === 'dont_know' ? '#dc3545' : '#6c757d');
                             @endphp
                             <tr style="border-top: 1px solid #ddd;">
                                 <td style="padding: 12px;">{{ $question->text }}</td>

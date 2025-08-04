@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
-            $table->enum('status', ['next', 'hint']); // next = I know, hint = I don't know
+            $table->enum('status', ['know', 'dont_know']);
             $table->timestamps();
         });
     }

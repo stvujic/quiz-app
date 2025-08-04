@@ -21,6 +21,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/questions/{question}/toggle-status', [QuestionController::class, 'toggleStatus'])->name('questions.toggleStatus');
 
+    Route::get('/test/categories', [QuestionController::class, 'showTestCategories'])->name('test.categories');
+    Route::post('/test/start', [QuestionController::class, 'startTest'])->name('test.start');
+    Route::post('/test/answer', [QuestionController::class, 'submitTestAnswer'])->name('test.answer');
+
 
     // Rute za profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
