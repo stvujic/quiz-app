@@ -112,8 +112,14 @@ class QuestionController extends Controller
         $categoryId = $request->input('category_id');
 
         $query = Question::with('category')
-            ->whereDoesntHave('userQuestionStatuses', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
+            ->where(function ($q) use ($userId) {
+                $q->whereDoesntHave('userQuestionStatuses', function ($sub) use ($userId) {
+                    $sub->where('user_id', $userId);
+                })
+                    ->orWhereHas('userQuestionStatuses', function ($sub) use ($userId) {
+                        $sub->where('user_id', $userId)
+                            ->where('status', 'dont_know');
+                    });
             });
 
         if ($categoryId !== 'all') {
@@ -134,7 +140,7 @@ class QuestionController extends Controller
         $userId = Auth::id();
         $questionId = $request->input('question_id');
         $categoryId = $request->input('category_id');
-        $action = $request->input('action'); // "know", "dont_know" ili "next"
+        $action = $request->input('action');
 
         if (in_array($action, ['know', 'dont_know'])) {
             UserQuestionStatus::updateOrCreate(
@@ -143,10 +149,16 @@ class QuestionController extends Controller
             );
         }
 
-        // Vrati sledeće pitanje
         $query = Question::with('category')
-            ->whereDoesntHave('userQuestionStatuses', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
+            ->where('id', '!=', $questionId)
+            ->where(function ($q) use ($userId) {
+                $q->whereDoesntHave('userQuestionStatuses', function ($sub) use ($userId) {
+                    $sub->where('user_id', $userId);
+                })
+                    ->orWhereHas('userQuestionStatuses', function ($sub) use ($userId) {
+                        $sub->where('user_id', $userId)
+                            ->where('status', 'dont_know');
+                    });
             });
 
         if ($categoryId !== 'all') {
@@ -162,6 +174,33 @@ class QuestionController extends Controller
         return view('test.question', [
             'question' => $nextQuestion,
             'categoryId' => $categoryId,
+        ]);
+    }
+
+    // Nova metoda za Hint
+    public function showCurrentTestQuestion(Request $request)
+    {
+        $questionId = $request->input('question_id');
+        $categoryId = $request->input('category_id');
+        $question = Question::with('category')->findOrFail($questionId);
+
+        return view('test.question', [
+            'question' => $question,
+            'categoryId' => $categoryId,
+            'showHint' => true,
+        ]);
+    }
+    public function showHint(Request $request)
+    {
+        $questionId = $request->input('question_id');
+        $categoryId = $request->input('category_id');
+
+        $question = Question::with('category')->findOrFail($questionId);
+
+        return view('test.question', [
+            'question' => $question,
+            'categoryId' => $categoryId,
+            'showHint' => true,
         ]);
     }
 }

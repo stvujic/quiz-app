@@ -11,12 +11,24 @@
             <p>{{ $question->text }}</p>
         </div>
 
-        <form action="{{ route('test.answer') }}" method="POST" style="margin-bottom: 30px;">
-            @csrf
-            <input type="hidden" name="question_id" value="{{ $question->id }}">
-            <input type="hidden" name="category_id" value="{{ $categoryId }}">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
 
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            {{-- Hint dugme — GET request da samo prikaže odgovor --}}
+            <form method="GET" action="{{ route('test.hint') }}">
+                <input type="hidden" name="action" value="hint">
+                <input type="hidden" name="question_id" value="{{ $question->id }}">
+                <input type="hidden" name="category_id" value="{{ $categoryId }}">
+                <button type="submit" style="padding: 10px 20px; background-color: #ffcc00; color: black; border: none; cursor: pointer;">
+                    Hint
+                </button>
+            </form>
+
+            {{-- Glavna forma za POST akcije --}}
+            <form action="{{ route('test.answer') }}" method="POST" style="display: flex; gap: 10px;">
+                @csrf
+                <input type="hidden" name="question_id" value="{{ $question->id }}">
+                <input type="hidden" name="category_id" value="{{ $categoryId }}">
+
                 <button type="submit" name="action" value="dont_know" style="padding: 10px 20px; background-color: #cc0000; color: white; border: none; cursor: pointer;">
                     I don't know
                 </button>
@@ -26,11 +38,11 @@
                 <button type="submit" name="action" value="next" style="padding: 10px 20px; background-color: #777; color: white; border: none; cursor: pointer;">
                     Next
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
 
-        @if(request('action') === 'dont_know')
-            <div style="background-color: #ffffcc; border: 1px solid #ddd; padding: 15px;">
+        @if(!empty($showHint) && $showHint === true)
+            <div style="background-color: #ffffcc; border: 1px solid #ddd; padding: 15px; margin-top: 20px;">
                 <p style="font-weight: bold;">Answer:</p>
                 <p>{{ $question->answer }}</p>
             </div>

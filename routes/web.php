@@ -21,10 +21,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/questions/{question}/toggle-status', [QuestionController::class, 'toggleStatus'])->name('questions.toggleStatus');
 
+
+    // Test mode
+    Route::get('/test/hint', [QuestionController::class, 'showHint'])->name('test.hint');
     Route::get('/test/categories', [QuestionController::class, 'showTestCategories'])->name('test.categories');
     Route::post('/test/start', [QuestionController::class, 'startTest'])->name('test.start');
     Route::post('/test/answer', [QuestionController::class, 'submitTestAnswer'])->name('test.answer');
-
+    Route::get('/test/question', [QuestionController::class, 'showCurrentTestQuestion'])->name('test.question'); // Dodata GET ruta za prikaz pitanja sa hintom
 
     // Rute za profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
