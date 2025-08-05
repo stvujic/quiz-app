@@ -69,6 +69,11 @@
         .admin-btn {
             background-color: #333;
         }
+
+        .csv-btn {
+            background-color: #17a2b8;
+            margin-top: 10px;
+        }
     </style>
 
     <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
@@ -99,6 +104,9 @@
         </div>
 
         <div style="text-align: center;">
+            {{-- DODATO: Dugme za CSV backup --}}
+            <a href="{{ route('questions.export.csv') }}" class="button csv-btn">⬇ Backup Questions (CSV)</a><br>
+
             <a href="{{ route('test.categories') }}" class="button">Start Test</a><br>
 
             @if (Auth::user() && Auth::user()->is_admin)

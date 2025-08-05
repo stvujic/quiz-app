@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\UserQuestionStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QuestionController extends Controller
 {
@@ -216,5 +217,43 @@ class QuestionController extends Controller
             'categoryId' => $categoryId,
             'showHint' => true,
         ]);
+    }
+    public function exportCsv(): StreamedResponse
+    {
+        $fileName = 'questions_backup.csv';
+        $questions = Question::with('category')->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename={$fileName}",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $columns = ['ID', 'Question Text', 'Answer', 'Category', 'Created At'];
+
+        $callback = function () use ($questions, $columns) {
+            $file = fopen('php://output', 'w');
+
+            // 🔥 Dodaj UTF-8 BOM
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, $columns);
+
+            foreach ($questions as $q) {
+                fputcsv($file, [
+                    $q->id,
+                    $q->text,
+                    $q->answer,
+                    $q->category->name ?? 'Uncategorized',
+                    $q->created_at->format('Y-m-d H:i'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

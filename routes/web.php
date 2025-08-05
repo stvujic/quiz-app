@@ -15,19 +15,26 @@ Route::middleware('auth')->group(function () {
     // Rute za pitanja
     Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
     Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
+
+    // ⬇ OVDE IDE CSV EXPORT — PRE dynamic rute
+    Route::get('/questions/backup-csv', [QuestionController::class, 'exportCsv'])
+        ->name('questions.export.csv')
+        ->middleware('auth');
+
+    // ⬇ Mora ostati POSLE CSV rute
     Route::get('/questions/{status}', [QuestionController::class, 'indexByStatus'])->name('questions.status');
+
     Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
     Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/questions/{question}/toggle-status', [QuestionController::class, 'toggleStatus'])->name('questions.toggleStatus');
-
 
     // Test mode
     Route::get('/test/hint', [QuestionController::class, 'showHint'])->name('test.hint');
     Route::get('/test/categories', [QuestionController::class, 'showTestCategories'])->name('test.categories');
     Route::post('/test/start', [QuestionController::class, 'startTest'])->name('test.start');
     Route::post('/test/answer', [QuestionController::class, 'submitTestAnswer'])->name('test.answer');
-    Route::get('/test/question', [QuestionController::class, 'showCurrentTestQuestion'])->name('test.question'); // Dodata GET ruta za prikaz pitanja sa hintom
+    Route::get('/test/question', [QuestionController::class, 'showCurrentTestQuestion'])->name('test.question');
 
     // Rute za profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
