@@ -111,6 +111,8 @@ class QuestionController extends Controller
         $userId = Auth::id();
         $categoryId = $request->input('category_id');
 
+        session()->forget('viewed_question_ids'); // reset prikazanih pitanja
+
         $query = Question::with('category')
             ->where(function ($q) use ($userId) {
                 $q->whereDoesntHave('userQuestionStatuses', function ($sub) use ($userId) {
@@ -142,6 +144,7 @@ class QuestionController extends Controller
         $categoryId = $request->input('category_id');
         $action = $request->input('action');
 
+        // Ako je kliknuo know ili dont_know – upiši status
         if (in_array($action, ['know', 'dont_know'])) {
             UserQuestionStatus::updateOrCreate(
                 ['user_id' => $userId, 'question_id' => $questionId],
@@ -149,8 +152,18 @@ class QuestionController extends Controller
             );
         }
 
+        // Zabeleži da je pitanje prikazano
+        $viewed = session()->get('viewed_question_ids', []);
+        if (!in_array($questionId, $viewed)) {
+            $viewed[] = $questionId;
+            session()->put('viewed_question_ids', $viewed);
+        }
+
+        // Pronađi sledeće pitanje
+        $viewed = session()->get('viewed_question_ids', []);
+
         $query = Question::with('category')
-            ->where('id', '!=', $questionId)
+            ->whereNotIn('id', $viewed)
             ->where(function ($q) use ($userId) {
                 $q->whereDoesntHave('userQuestionStatuses', function ($sub) use ($userId) {
                     $sub->where('user_id', $userId);
@@ -168,6 +181,7 @@ class QuestionController extends Controller
         $nextQuestion = $query->first();
 
         if (!$nextQuestion) {
+            session()->forget('viewed_question_ids');
             return redirect()->route('dashboard')->with('info', 'Test completed for this category.');
         }
 
@@ -177,7 +191,6 @@ class QuestionController extends Controller
         ]);
     }
 
-    // Nova metoda za Hint
     public function showCurrentTestQuestion(Request $request)
     {
         $questionId = $request->input('question_id');
@@ -190,6 +203,7 @@ class QuestionController extends Controller
             'showHint' => true,
         ]);
     }
+
     public function showHint(Request $request)
     {
         $questionId = $request->input('question_id');
