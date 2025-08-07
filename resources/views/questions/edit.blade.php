@@ -11,12 +11,12 @@
 
                 <div class="mb-4">
                     <label class="block font-medium text-sm text-gray-700">Question Text</label>
-                    <textarea name="text" class="w-full border-gray-300 rounded-md">{{ old('text', $question->text) }}</textarea>
+                    <textarea name="text" rows="4" class="w-full border-gray-300 rounded-md resize-y">{{ old('text', $question->text) }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="block font-medium text-sm text-gray-700">Answer</label>
-                    <textarea name="answer" class="w-full border-gray-300 rounded-md">{{ old('answer', $question->answer) }}</textarea>
+                    <textarea name="answer" rows="6" class="w-full border-gray-300 rounded-md resize-y">{{ old('answer', $question->answer) }}</textarea>
                 </div>
 
                 <div class="mb-4">

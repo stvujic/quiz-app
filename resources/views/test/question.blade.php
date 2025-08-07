@@ -44,7 +44,7 @@
         @if(!empty($showHint) && $showHint === true)
             <div style="background-color: #ffffcc; border: 1px solid #ddd; padding: 15px; margin-top: 20px;">
                 <p style="font-weight: bold;">Answer:</p>
-                <p>{{ $question->answer }}</p>
+                <p>{!! nl2br(e($question->answer)) !!}</p>
             </div>
         @endif
     </div>

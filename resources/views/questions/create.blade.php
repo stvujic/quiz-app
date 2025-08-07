@@ -18,7 +18,7 @@
             {{-- Answer --}}
             <div>
                 <label class="block font-medium text-sm text-gray-700">Answer</label>
-                <input type="text" name="answer" class="w-full mt-1 border-gray-300 rounded shadow-sm" required>
+                <textarea name="answer" rows="6" class="w-full mt-1 border-gray-300 rounded shadow-sm" required></textarea>
             </div>
 
             {{-- Category --}}
